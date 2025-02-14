@@ -1,7 +1,8 @@
 import jsonwebtoken from "jsonwebtoken"
+import { configDotenv } from "dotenv"
 
-const SECRETKEY = "Ki5PbHV3YXNleWk4OC4q"
-
+configDotenv()
+const SECRETKEY = process.env.SECRETKEY
 const options = {
     expiresIn: "60m"
 }

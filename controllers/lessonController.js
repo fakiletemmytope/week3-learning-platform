@@ -68,7 +68,7 @@ const update_lesson = async () =>{
     
 }
 
-const delete_lessons = async () =>{
+const delete_lesson = async () =>{
     const role = req.decode.userType
     try{
         await dbConnect()
@@ -92,4 +92,4 @@ const delete_lessons = async () =>{
 }
 
 
-export { get_lesson, get_lessons, create_lesson, update_lesson, delete_lessons}
+export { get_lesson, get_lessons, create_lesson, update_lesson, delete_lesson}
