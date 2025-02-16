@@ -78,9 +78,7 @@ const delete_course = async (req, res) =>{
         const deleted_course = await CourseModel.findOneAndDelete(
             {_id: req.params.id, instructor: req.decode._id}
         )
-        if(!deleted_course) return res.status(404).send("Course not found")
-
-        res.status(200).json(deleted_course)
+        !deleted_course ? res.status(404).send("Course not found"): res.status(200).send("Course deleted")
     }catch(error){
         res.status(400).send(error.message)
     }finally{
