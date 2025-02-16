@@ -17,17 +17,20 @@ const ResourceSchema = new Schema({
 const LessonSchema = new Schema(
     {
         topic: { type: String, required: true },
-        objectives: {type: [String], required: true},
+        objectives: { type: [String], required: true },
         lessonType: {
             type: String,
             enum: Object.values(LessonType),
             required: true
         },
-        resources: {type: [ResourceSchema], required: false, default: null},
+        resources: { type: [ResourceSchema], required: false, default: [] },
         instructor_id: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users' },
         course_id: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'courses' },
 
-    }
+    },
+    { timestamps: true }
 )
+
+LessonSchema.index({ topic: 1, course_id: 1 }, { unique: true });
 
 export const LessonModel = model('lessons', LessonSchema)

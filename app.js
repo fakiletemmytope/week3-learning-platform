@@ -21,7 +21,7 @@ app.use("/auth", auth_router)
 app.use('/api/users', user_router);
 app.use('/api/courses', course_router);
 app.use('/api/enrollments', enrollment_router)
-app.use('api/lessons', lesson_router)
+app.use('/api/lessons', lesson_router)
 
 
 

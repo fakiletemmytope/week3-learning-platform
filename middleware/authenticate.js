@@ -10,9 +10,8 @@ export const authenticate = async (req, res, next) => {
     else {
         try {
             const token = auth.split(" ")[1]
-            const isTokenValid = await isTokenBlacklisted(token)
-            console.log(isTokenValid)
-            if(!isTokenValid) return res.status(400).send("Token not valid")
+            const is_token_blacklisted = await isTokenBlacklisted(token)
+            if(is_token_blacklisted) return res.status(400).send("Token not valid")
             const decode = await verifyToken(token)
             if (decode._id) {
                 req.decode = decode

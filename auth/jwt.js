@@ -11,6 +11,7 @@ export const tokenBlacklist = new Set();
 
 
 export const isTokenBlacklisted = (token) => {
+    console.log(tokenBlacklist)
     return tokenBlacklist.has(token);
 };
 
