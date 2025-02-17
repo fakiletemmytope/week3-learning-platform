@@ -100,6 +100,15 @@ export const update_user = async (req, res) => {
 }
 
 
-export const delete_user = (req, res) => {
-    res.status(200).send("delete a user")
+export const delete_user = async (req, res) => {
+    try {
+        await dbConnect()
+        const deleted_user = await UserModel.findByIdAndDelete(req.params.id)
+        deleted_user ? res.status(200).send("User deleted") : res.status(403).send("User not found")
+
+    } catch (error) {
+        res.status(400).send(error.message)
+    } finally {
+        dbClose()
+    }
 }
