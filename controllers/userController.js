@@ -20,9 +20,15 @@ export const get_users = async (req, res) => {
 
 export const get_a_user = async (req, res) => {
     try {
-        await dbConnect()
-        const user = await UserModel.findById(req.params.id, "last_name first_name id email date_created date_updated");
-        res.status(200).json(user)
+        if(req.decode.userType === "admin" || req.decode._id === req.params.id){
+            await dbConnect()
+            const user = await UserModel.findById(req.params.id, "last_name first_name id email date_created date_updated");
+            res.status(200).json(user)
+        }
+        else{
+            res.status(403).send("Unauthorised user")
+        }
+        
     }
     catch (err) {
         res.status(400).json(err.message)
