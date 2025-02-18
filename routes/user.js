@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate, isAdmin, hashPassword } from "../middleware/authenticate.js";
+import { authenticate, isAdmin, hashPassword, user_update_permission } from "../middleware/authenticate.js";
 import {
     get_users,
     get_a_user,
@@ -7,6 +7,7 @@ import {
     update_user,
     create_user
 } from "../controllers/userController.js"
+
 
 const router = Router()
 
@@ -16,7 +17,7 @@ router.get("/:id", authenticate, get_a_user)
 
 router.post("/", hashPassword, create_user)
 
-router.put("/:id", authenticate, update_user)
+router.put("/:id", authenticate, user_update_permission, update_user)
 
 router.delete("/:id", authenticate, isAdmin, delete_user)
 

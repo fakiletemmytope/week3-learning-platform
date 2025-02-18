@@ -83,3 +83,7 @@ export const hashPassword = async (req, res, next) => {
         res.status(400).send(error.message)
     }
 }
+
+export const user_update_permission = async (req, res, next) => {
+    req.decode.userType === "admin" || req.decode._id === req.params.id ? next() : res.status(403).send("Unauthorised user")
+}
