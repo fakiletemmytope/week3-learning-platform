@@ -55,17 +55,26 @@ const update_course = async (req, res) =>{
         res.status(400).send("Nothing to update");
         return
     }
-    try{
-        await dbConnect()
-        const updated_course = await CourseModel.findOneAndUpdate(
-            {_id: req.params.id, instructor: req.decode._id},
-            update,
-            {new: true}
-        )
-        if(!updated_course) return res.status(404).send("Course not found")
-        res.status(200).json(updated_course)
-
-    }catch(error){
+    try {
+            await dbConnect()
+            let updated_course = null
+    
+            if (role === "admin") {
+                updated_course = await CourseModel.findOneAndUpdate(
+                    { _id: req.params.id },
+                    update,
+                    { new: true }
+                )
+            } else if (role === "instructor") {
+                updated_course = await CourseModel.findOneAndUpdate(
+                    { _id: req.params.id, instructor_id: req.decode._id },
+                    update,
+                    { new: true }
+                )
+            }
+            updated_course ? res.status(200).json(updated_course) : res.status(404).send("Course not found or not updated")
+    
+        }catch(error){
         res.status(400).send(error.message)
     }finally{
         dbClose()
@@ -75,10 +84,18 @@ const update_course = async (req, res) =>{
 const delete_course = async (req, res) =>{
     try{
         await dbConnect()
-        const deleted_course = await CourseModel.findOneAndDelete(
-            {_id: req.params.id, instructor: req.decode._id}
-        )
-        !deleted_course ? res.status(404).send("Course not found"): res.status(200).send("Course deleted")
+        if(req.decode.userType === "admin"){
+            const deleted_course = await CourseModel.findOneAndDelete(
+                {_id: req.params.id}
+            )
+            !deleted_course ? res.status(404).send("Course not found"): res.status(200).send("Course deleted")
+        }
+        if(req.decode.userType === "instructor"){
+            const deleted_course = await CourseModel.findOneAndDelete(
+                {_id: req.params.id, instructor: req.decode._id}
+            )
+            !deleted_course ? res.status(404).send("Course not found"): res.status(200).send("Course deleted")
+        }  
     }catch(error){
         res.status(400).send(error.message)
     }finally{

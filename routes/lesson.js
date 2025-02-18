@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {isAdminOrInstructor, isInstructor, authenticate} from "../middleware/authenticate.js"
+import { isAdminOrInstructor, isInstructor, authenticate } from "../middleware/authenticate.js"
 import {
     get_lesson,
     get_lessons,

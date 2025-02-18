@@ -18,7 +18,7 @@ router.get("/:id", get_course)
 
 router.post("/", authenticate, isInstructor, create_course)
 
-router.put("/:id", authenticate, isInstructor, update_course)
+router.put("/:id", authenticate, isAdminOrInstructor, update_course)
 
 router.delete("/:id", authenticate, isAdminOrInstructor, delete_course)
 
