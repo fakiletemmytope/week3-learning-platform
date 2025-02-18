@@ -3,51 +3,51 @@ import { dbClose, dbConnect } from "../database/dbConnect.js"
 import { course_router } from "../routes/course.js"
 import { CourseModel } from "../schema/course.js"
 
-const get_courses = async (req, res) =>{
-    try{
+const get_courses = async (req, res) => {
+    try {
         await dbConnect()
         const courses = await CourseModel.find({}, "title instructor duration _id price description")
         res.status(200).json(courses)
-    }catch(error){
+    } catch (error) {
         res.status(400).send(error.message)
-    }finally{
+    } finally {
         dbClose()
-    } 
+    }
 }
 
-const get_course = async (req, res) =>{
+const get_course = async (req, res) => {
     const id = req.params.id
-    try{
+    try {
         await dbConnect()
         const course = await CourseModel.findById(id, "title instructor duration _id price description")
-        if(!course) return res.status(404).send("Course not found")
+        if (!course) return res.status(404).send("Course not found")
         res.status(200).json(course)
-    }catch(error){
+    } catch (error) {
         res.status(400).send(error.message)
-    }finally{
+    } finally {
         dbClose()
-    } 
+    }
 }
 
 
-const create_course = async (req, res) =>{
-    const {title, description, price, duration} = req.body
-    const course = new CourseModel({title, description, price, duration, instructor: req.decode._id  })
-    try{
+const create_course = async (req, res) => {
+    const { title, description, price, duration } = req.body
+    const course = new CourseModel({ title, description, price, duration, instructor: req.decode._id })
+    try {
         dbConnect()
         const savedCourse = await course.save()
         res.status(200).json(savedCourse)
-    }catch(err){
+    } catch (err) {
         res.status(400).send(err.message)
-    }finally{
+    } finally {
         dbClose()
-    }   
+    }
 }
 
-const update_course = async (req, res) =>{
-    const {title, description, duration, price} = req.body
+const update_course = async (req, res) => {
+    const { title, description, duration, price } = req.body
     const update = {}
-    if (title) update.title = title 
+    if (title) update.title = title
     if (description) update.description = description
     if (duration) update.duration = duration
     if (price) update.price = price
@@ -56,51 +56,51 @@ const update_course = async (req, res) =>{
         return
     }
     try {
-            await dbConnect()
-            let updated_course = null
-    
-            if (role === "admin") {
-                updated_course = await CourseModel.findOneAndUpdate(
-                    { _id: req.params.id },
-                    update,
-                    { new: true }
-                )
-            } else if (role === "instructor") {
-                updated_course = await CourseModel.findOneAndUpdate(
-                    { _id: req.params.id, instructor_id: req.decode._id },
-                    update,
-                    { new: true }
-                )
-            }
-            updated_course ? res.status(200).json(updated_course) : res.status(404).send("Course not found or not updated")
-    
-        }catch(error){
-        res.status(400).send(error.message)
-    }finally{
-        dbClose()
-    }  
-}
-
-const delete_course = async (req, res) =>{
-    try{
         await dbConnect()
-        if(req.decode.userType === "admin"){
-            const deleted_course = await CourseModel.findOneAndDelete(
-                {_id: req.params.id}
+        let updated_course = null
+
+        if (req.decode.userType === "admin") {
+            updated_course = await CourseModel.findOneAndUpdate(
+                { _id: req.params.id },
+                update,
+                { new: true }
             )
-            !deleted_course ? res.status(404).send("Course not found"): res.status(200).send("Course deleted")
+        } else if (req.decode.userType === "instructor") {
+            updated_course = await CourseModel.findOneAndUpdate(
+                { _id: req.params.id, instructor: req.decode._id },
+                update,
+                { new: true }
+            )
         }
-        if(req.decode.userType === "instructor"){
-            const deleted_course = await CourseModel.findOneAndDelete(
-                {_id: req.params.id, instructor: req.decode._id}
-            )
-            !deleted_course ? res.status(404).send("Course not found"): res.status(200).send("Course deleted")
-        }  
-    }catch(error){
+        updated_course ? res.status(200).json(updated_course) : res.status(404).send("Course not found or not updated")
+
+    } catch (error) {
         res.status(400).send(error.message)
-    }finally{
+    } finally {
         dbClose()
     }
 }
 
-export { get_course, get_courses, update_course, delete_course, create_course}
+const delete_course = async (req, res) => {
+    try {
+        await dbConnect()
+        if (req.decode.userType === "admin") {
+            const deleted_course = await CourseModel.findOneAndDelete(
+                { _id: req.params.id }
+            )
+            !deleted_course ? res.status(404).send("Course not found") : res.status(200).send("Course deleted")
+        }
+        if (req.decode.userType === "instructor") {
+            const deleted_course = await CourseModel.findOneAndDelete(
+                { _id: req.params.id, instructor: req.decode._id }
+            )
+            !deleted_course ? res.status(404).send("Course not found") : res.status(200).send("Course deleted")
+        }
+    } catch (error) {
+        res.status(400).send(error.message)
+    } finally {
+        dbClose()
+    }
+}
+
+export { get_course, get_courses, update_course, delete_course, create_course }
